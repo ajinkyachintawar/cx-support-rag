@@ -1,0 +1,259 @@
+[
+  {
+    "id": "GT-01",
+    "question": "How many days does a standard customer have to request a refund?",
+    "expected_source": "refund_policy_standard.md",
+    "expected_answer_contains": ["14", "days"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-02",
+    "question": "What's the refund window for a premium tier customer, REF-PREM-030?",
+    "expected_source": "refund_policy_premium.md",
+    "expected_answer_contains": ["30", "days"],
+    "category": "clear",
+    "should_escalate": false,
+    "notes": "Contains exact policy code REF-PREM-030 - tests hybrid keyword retrieval"
+  },
+  {
+    "id": "GT-03",
+    "question": "A premium customer is asking for a refund on day 35, what should I tell them?",
+    "expected_source": "refund_policy_premium.md",
+    "expected_answer_contains": ["store credit", "50%"],
+    "category": "ambiguous",
+    "should_escalate": false,
+    "notes": "Requires distinguishing day 30-45 partial credit window from full refund window, near-duplicate trap vs standard tier doc"
+  },
+  {
+    "id": "GT-04",
+    "question": "When does a case need to be escalated to a supervisor?",
+    "expected_source": "escalation_rules.md",
+    "expected_answer_contains": ["legal action", "supervisor"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-05",
+    "question": "Customer's delivery is 5 days late, what do we offer?",
+    "expected_source": "delivery_delay_process.md",
+    "expected_answer_contains": ["$10", "credit"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-06",
+    "question": "Delivery shows as delivered but customer says they never got it, what process do we follow?",
+    "expected_source": "lost_package_process.md",
+    "expected_answer_contains": ["lost", "reshipment"],
+    "category": "ambiguous",
+    "should_escalate": false,
+    "notes": "Trap: easy to misclassify as delivery_delay_process.md instead of lost_package_process.md"
+  },
+  {
+    "id": "GT-07",
+    "question": "A customer wants to know exactly what personal data we hold on them, what do I do?",
+    "expected_source": "data_privacy_rules.md",
+    "expected_answer_contains": ["escalate"],
+    "category": "clear",
+    "should_escalate": true
+  },
+  {
+    "id": "GT-08",
+    "question": "Customer was charged twice for the same order, what's the precedent?",
+    "expected_source": "case_0142_duplicate_charge.md",
+    "expected_answer_contains": ["refund", "gateway"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-09",
+    "question": "Someone received a gift but doesn't have the original order number, can we still process a refund?",
+    "expected_source": "case_0156_gift_refund.md",
+    "expected_answer_contains": ["store credit"],
+    "category": "ambiguous",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-10",
+    "question": "Customer bought something while premium but cancelled premium before requesting a refund, which window applies?",
+    "expected_source": "case_0163_tier_downgrade.md",
+    "expected_answer_contains": ["time of purchase", "premium"],
+    "category": "ambiguous",
+    "should_escalate": false,
+    "notes": "Requires connecting two docs: refund_policy_premium.md and the case precedent overriding naive current-status logic"
+  },
+  {
+    "id": "GT-11",
+    "question": "Customer threatened to post about us on social media because of a delay, do I need to escalate?",
+    "expected_source": "case_0171_social_media_threat.md",
+    "expected_answer_contains": ["does not", "escalat"],
+    "category": "ambiguous",
+    "should_escalate": false,
+    "notes": "Trap: tests that agent doesn't over-escalate based on emotional language alone"
+  },
+  {
+    "id": "GT-12",
+    "question": "Order of 3 items arrived with only 2 inside, how do I handle the missing one?",
+    "expected_source": "case_0188_partial_shipment.md",
+    "expected_answer_contains": ["reshipment", "missing"],
+    "category": "ambiguous",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-13",
+    "question": "What's our general process for logging a complaint about product quality?",
+    "expected_source": "complaint_handling_sop.md",
+    "expected_answer_contains": ["log", "feedback"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-14",
+    "question": "What two pieces of ID do we need to verify a customer's identity, VER-003?",
+    "expected_source": "account_verification.md",
+    "expected_answer_contains": ["two", "email"],
+    "category": "clear",
+    "should_escalate": false,
+    "notes": "Exact policy code VER-003 - keyword retrieval anchor"
+  },
+  {
+    "id": "GT-15",
+    "question": "Is phone number alone enough to verify a customer?",
+    "expected_source": "account_verification.md",
+    "expected_answer_contains": ["not sufficient", "not enough"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-16",
+    "question": "Customer cancelling premium wants a refund for unused days this cycle, can we do that?",
+    "expected_source": "subscription_cancellation.md",
+    "expected_answer_contains": ["no partial refund", "end of"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-17",
+    "question": "A promo code didn't apply at checkout, code reference SYS-4471, what do I check?",
+    "expected_source": "promo_code_disputes.md",
+    "expected_answer_contains": ["expiry", "minimum order"],
+    "category": "clear",
+    "should_escalate": false,
+    "notes": "Exact ticket reference SYS-4471 - keyword retrieval anchor"
+  },
+  {
+    "id": "GT-18",
+    "question": "International order stuck in customs for 12 days, does delivery delay compensation apply?",
+    "expected_source": "case_0195_customs_delay.md",
+    "expected_answer_contains": ["not", "customs"],
+    "category": "ambiguous",
+    "should_escalate": false,
+    "notes": "Trap: tests that DEL-007 domestic-only scope is correctly excluded for international customs holds"
+  },
+  {
+    "id": "GT-19",
+    "question": "Customer asked us to delete their account in the middle of a call about a late delivery, what do I do?",
+    "expected_source": "case_0203_deletion_mid_complaint.md",
+    "expected_answer_contains": ["escalat", "DPR"],
+    "category": "ambiguous",
+    "should_escalate": true,
+    "notes": "Trap: tests escalation trigger even when buried inside an unrelated call"
+  },
+  {
+    "id": "GT-20",
+    "question": "Who pays for return shipping if the customer just changed their mind?",
+    "expected_source": "return_shipping_cost.md",
+    "expected_answer_contains": ["customer pays"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-21",
+    "question": "Reference code RET-SHIP-018, does a premium customer pay return shipping for a change of mind return?",
+    "expected_source": "return_shipping_cost.md",
+    "expected_answer_contains": ["free", "premium"],
+    "category": "clear",
+    "should_escalate": false,
+    "notes": "Exact policy code RET-SHIP-018 - keyword retrieval anchor"
+  },
+  {
+    "id": "GT-22",
+    "question": "Customer wants to change the shipping address but the order already shows as dispatched, can we do that?",
+    "expected_source": "order_modification.md",
+    "expected_answer_contains": ["not possible", "dispatched"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-23",
+    "question": "Customer in Europe says they were charged more than the USD price listed, is that a billing error?",
+    "expected_source": "case_0211_currency_dispute.md",
+    "expected_answer_contains": ["not", "bank"],
+    "category": "ambiguous",
+    "should_escalate": false,
+    "notes": "Trap: tests that this is NOT misclassified as promo_code_disputes.md or a billing system error"
+  },
+  {
+    "id": "GT-24",
+    "question": "What's our policy on price matching competitor websites?",
+    "expected_source": null,
+    "expected_answer_contains": [],
+    "category": "out_of_scope",
+    "should_escalate": true,
+    "notes": "No document covers this - tests confidence gate correctly refuses rather than guessing"
+  },
+  {
+    "id": "GT-25",
+    "question": "Can a customer transfer their premium subscription to a family member's account?",
+    "expected_source": null,
+    "expected_answer_contains": [],
+    "category": "out_of_scope",
+    "should_escalate": true,
+    "notes": "No document covers this - tests confidence gate, plausible-sounding question with zero coverage"
+  },
+  {
+    "id": "GT-26",
+    "question": "What's the process if a customer wants to pay using cryptocurrency?",
+    "expected_source": null,
+    "expected_answer_contains": [],
+    "category": "out_of_scope",
+    "should_escalate": true,
+    "notes": "No document covers this - tests confidence gate on a clearly unsupported payment method"
+  },
+  {
+    "id": "GT-27",
+    "question": "Is there a referral bonus program for existing customers?",
+    "expected_source": null,
+    "expected_answer_contains": [],
+    "category": "out_of_scope",
+    "should_escalate": true,
+    "notes": "No document covers this - tests confidence gate on a plausible business question with no coverage"
+  },
+  {
+    "id": "GT-28",
+    "question": "Customer wants a refund for a promo code item, does the 14-day window apply?",
+    "expected_source": "promo_code_disputes.md",
+    "expected_answer_contains": ["not", "billing"],
+    "category": "ambiguous",
+    "should_escalate": false,
+    "notes": "Trap: tests that promo disputes are correctly distinguished from standard refund-policy window logic"
+  },
+  {
+    "id": "GT-29",
+    "question": "A customer's order is still in processing status and they want to change the size, is that allowed?",
+    "expected_source": "order_modification.md",
+    "expected_answer_contains": ["possible", "processing"],
+    "category": "clear",
+    "should_escalate": false
+  },
+  {
+    "id": "GT-30",
+    "question": "What ticket tag should be used for a data deletion request, and what's the SLA?",
+    "expected_source": "data_privacy_rules.md",
+    "expected_answer_contains": ["DPR", "72"],
+    "category": "clear",
+    "should_escalate": true,
+    "notes": "Exact tag and SLA number - keyword retrieval anchor"
+  }
+]

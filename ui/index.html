@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Otonomee KB Agent</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #222535;
+      --border: #2d3148;
+      --accent: #6366f1;
+      --accent-dim: #4f52d8;
+      --text: #e2e4f0;
+      --text-muted: #7c7f9a;
+      --success: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --font: 'Inter', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    header h1 { font-size: 16px; font-weight: 600; color: var(--text); }
+    header span { font-size: 12px; color: var(--text-muted); margin-left: 8px; background: var(--surface2); padding: 2px 8px; border-radius: 4px; }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .message { display: flex; flex-direction: column; gap: 8px; }
+    .message.user { align-items: flex-end; }
+    .message.assistant { align-items: flex-start; }
+
+    .bubble {
+      max-width: 75%;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .user .bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+    .assistant .bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+
+    .meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-conf { background: rgba(99,102,241,0.15); color: var(--accent); border: 1px solid rgba(99,102,241,0.3); }
+    .badge-escalate { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+    .badge-ok { background: rgba(34,197,94,0.15); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+    .badge-warn { background: rgba(245,158,11,0.15); color: var(--warn); border: 1px solid rgba(245,158,11,0.3); }
+    .latency { font-size: 11px; color: var(--text-muted); }
+
+    .sources-toggle {
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0;
+    }
+    .sources-toggle:hover { color: var(--text); }
+    .sources-list {
+      display: none;
+      margin-top: 6px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: var(--mono);
+      gap: 6px;
+      flex-direction: column;
+    }
+    .sources-list.open { display: flex; }
+    .source-item { display: flex; justify-content: space-between; align-items: center; }
+    .source-name { color: var(--accent); }
+    .source-score { color: var(--text-muted); }
+
+    .conf-bar { width: 60px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .conf-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+
+    .welcome {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .welcome h2 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .welcome p { font-size: 14px; line-height: 1.6; max-width: 480px; margin: 0 auto 24px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .pill:hover { border-color: var(--accent); background: rgba(99,102,241,0.08); }
+
+    .input-area {
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      gap: 10px;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .input-wrap { flex: 1; position: relative; }
+    #question {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 48px 12px 16px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: var(--font);
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s;
+      max-height: 120px;
+      min-height: 46px;
+    }
+    #question:focus { border-color: var(--accent); }
+    #question::placeholder { color: var(--text-muted); }
+    #send {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: var(--accent); border: none; border-radius: 6px;
+      width: 30px; height: 30px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; transition: background 0.15s;
+    }
+    #send:hover { background: var(--accent-dim); }
+    #send svg { width: 14px; height: 14px; fill: white; }
+    #send:disabled { background: var(--border); cursor: not-allowed; }
+
+    .typing { display: flex; align-items: center; gap: 6px; padding: 12px 16px; }
+    .dot { width: 6px; height: 6px; background: var(--text-muted); border-radius: 50%; animation: bounce 1.2s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">OK</div>
+    <h1>Otonomee KB Agent</h1>
+    <span>CX Support</span>
+  </header>
+
+  <div class="chat-container" id="chat">
+    <div class="welcome" id="welcome">
+      <h2>Knowledge Base Assistant</h2>
+      <p>Ask any customer support question and I'll find the relevant policy or precedent — and tell you honestly when I don't know.</p>
+      <div class="pills">
+        <div class="pill" onclick="ask(this.textContent)">What's the premium refund window?</div>
+        <div class="pill" onclick="ask(this.textContent)">When do I need to escalate a case?</div>
+        <div class="pill" onclick="ask(this.textContent)">Delivery shows delivered but not received</div>
+        <div class="pill" onclick="ask(this.textContent)">Can we do price matching?</div>
+        <div class="pill" onclick="ask(this.textContent)">Customer bought as premium but downgraded — which refund window?</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:860px;width:100%;margin:0 auto;padding:0 24px 4px;font-size:11px;color:var(--text-muted);text-align:right">
+    Powered by Jina Embeddings v3 + Gemini Flash · Hybrid RAG
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="question" rows="1" placeholder="Ask a support question…"></textarea>
+      <button id="send" onclick="sendQuery()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const qInput = document.getElementById('question');
+    const sendBtn = document.getElementById('send');
+
+    qInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuery(); }
+    });
+    qInput.addEventListener('input', () => {
+      qInput.style.height = 'auto';
+      qInput.style.height = Math.min(qInput.scrollHeight, 120) + 'px';
+    });
+
+    function ask(text) { qInput.value = text; sendQuery(); }
+
+    function confColor(c) {
+      if (c >= 0.7) return 'var(--success)';
+      if (c >= 0.4) return 'var(--warn)';
+      return 'var(--danger)';
+    }
+
+    function addMessage(role, html, meta = null) {
+      const welcome = document.getElementById('welcome');
+      if (welcome) welcome.remove();
+
+      const div = document.createElement('div');
+      div.className = `message ${role}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = html;
+      div.appendChild(bubble);
+
+      if (meta) {
+        const metaEl = document.createElement('div');
+        metaEl.className = 'meta';
+
+        const confPct = Math.round(meta.confidence * 100);
+        const confBadgeClass = meta.should_escalate ? 'badge-escalate' : (meta.confidence >= 0.7 ? 'badge-ok' : 'badge-warn');
+        metaEl.innerHTML = `
+          <span class="badge ${confBadgeClass}">
+            ${meta.should_escalate ? '⚠ Escalate' : `✓ ${confPct}% confidence`}
+          </span>
+          <div class="conf-bar" title="Confidence: ${confPct}%">
+            <div class="conf-fill" style="width:${confPct}%;background:${confColor(meta.confidence)}"></div>
+          </div>
+          <span class="latency">${meta.latency_ms}ms</span>
+        `;
+
+        if (meta.sources && meta.sources.length > 0) {
+          const togBtn = document.createElement('button');
+          togBtn.className = 'sources-toggle';
+          togBtn.innerHTML = `<span>▶</span> ${meta.sources.length} source${meta.sources.length > 1 ? 's' : ''}`;
+
+          const srcList = document.createElement('div');
+          srcList.className = 'sources-list';
+          meta.sources.forEach(s => {
+            const item = document.createElement('div');
+            item.className = 'source-item';
+            item.innerHTML = `<span class="source-name">${s.filename}</span><span class="source-score">score: ${s.rrf_score}</span>`;
+            srcList.appendChild(item);
+          });
+
+          togBtn.onclick = () => {
+            const open = srcList.classList.toggle('open');
+            togBtn.querySelector('span').textContent = open ? '▼' : '▶';
+          };
+
+          const srcWrap = document.createElement('div');
+          srcWrap.appendChild(togBtn);
+          srcWrap.appendChild(srcList);
+          div.appendChild(metaEl);
+          div.appendChild(srcWrap);
+        } else {
+          div.appendChild(metaEl);
+        }
+      }
+
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return div;
+    }
+
+    function addTyping() {
+      const div = document.createElement('div');
+      div.className = 'message assistant';
+      div.id = 'typing';
+      div.innerHTML = `<div class="bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return div;
+    }
+
+    async function sendQuery() {
+      const q = qInput.value.trim();
+      if (!q || sendBtn.disabled) return;
+
+      qInput.value = '';
+      qInput.style.height = 'auto';
+      sendBtn.disabled = true;
+
+      addMessage('user', escHtml(q));
+      const typing = addTyping();
+
+      try {
+        const res = await fetch('/query', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({question: q})
+        });
+
+        typing.remove();
+
+        if (!res.ok) {
+          addMessage('assistant', `<span style="color:var(--danger)">Error ${res.status}: ${res.statusText}</span>`);
+          return;
+        }
+
+        const data = await res.json();
+        addMessage('assistant', escHtml(data.answer), data);
+      } catch (err) {
+        typing.remove();
+        addMessage('assistant', `<span style="color:var(--danger)">Network error: ${err.message}</span>`);
+      } finally {
+        sendBtn.disabled = false;
+        qInput.focus();
+      }
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    }
+  </script>
+</body>
+</html>
