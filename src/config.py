@@ -4,7 +4,6 @@ from pydantic import Field
 
 class Settings(BaseSettings):
     jina_api_key: str = Field(..., description="Jina AI API key for embeddings")
-    gemini_api_key: str = Field(default="", description="Google Gemini API key (unused, kept for reference)")
     groq_api_key: str = Field(..., description="Groq API key for LLM synthesis")
     supabase_url: str = Field(..., description="Supabase project URL (PostgreSQL connection string)")
     supabase_service_key: str = Field(default="", description="Supabase service role key (unused with direct PG)")
@@ -18,8 +17,8 @@ class Settings(BaseSettings):
 
     vector_top_k: int = 10
     keyword_top_k: int = 10
-    fusion_top_n: int = 5   # retrieve 5, but synthesis uses top 3
-    synthesis_top_k: int = 3  # number of chunks passed to LLM
+    fusion_top_n: int = 5
+    synthesis_top_k: int = 3
     rrf_k: int = 60
 
     chunk_max_tokens: int = 400

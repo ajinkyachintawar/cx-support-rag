@@ -8,15 +8,15 @@ from src.agent.prompts import SYNTHESIS_SYSTEM_PROMPT
 
 logger = structlog.get_logger()
 
-_groq_client: AsyncGroq | None = None
+_client: AsyncGroq | None = None
 
 
 def _get_client() -> AsyncGroq:
-    global _groq_client
-    if _groq_client is None:
+    global _client
+    if _client is None:
         from src.config import settings
-        _groq_client = AsyncGroq(api_key=settings.groq_api_key)
-    return _groq_client
+        _client = AsyncGroq(api_key=settings.groq_api_key)
+    return _client
 
 
 async def query_node(state: AgentState) -> dict:
@@ -65,7 +65,6 @@ async def synthesis_node(state: AgentState) -> dict:
             "should_escalate": True,
         }
 
-    # Pass only top-k docs to keep context tight (retrieve more, synthesize fewer)
     synthesis_docs = docs[:settings.synthesis_top_k]
     context = "\n\n---\n\n".join(
         f"[Source: {doc['source']}]\n{doc['content']}"

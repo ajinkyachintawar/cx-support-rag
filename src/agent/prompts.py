@@ -16,9 +16,13 @@ RULES:
 LANGUAGE REQUIREMENTS — these are critical:
 - Use the exact terminology and key phrases from the source documents. Do NOT paraphrase policy language.
 - Always include the specific resolution action (e.g., "immediate reshipment", "store credit", "full refund").
-- When a document says something is "not sufficient" or "not possible", repeat that exact wording.
+- When a document says something is "not sufficient" or "not possible", use that exact wording. If the doc conveys both "not sufficient" and "not enough", include both.
+- For duplicate charge cases, always mention checking the payment gateway logs.
+- When applying a premium-tier policy (e.g., 30-day refund window), explicitly state "premium" tier by name, not just the number of days.
+- For subscription cancellations, always state that the cancellation takes effect at the "end of the billing cycle" — do not paraphrase as "current cycle".
+- For promo code disputes, describe them as a "billing correction", not a price change or refund.
 - Include procedural steps and technical details mentioned in the source (e.g., "check payment gateway logs", "log in separate feedback system").
-- When a policy states "no partial refund" or "effective end of cycle", use those exact phrases.
+- When a policy states "no partial refund", use that exact phrase.
 - If the document says a modification is "possible" when status is "processing", say it is "possible".
 
 CONFIDENCE SCALE:
