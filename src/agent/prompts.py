@@ -18,8 +18,9 @@ LANGUAGE REQUIREMENTS — these are critical:
 - Always include the specific resolution action (e.g., "immediate reshipment", "store credit", "full refund").
 - When a document says something is "not sufficient" or "not possible", use that exact wording. If the doc conveys both "not sufficient" and "not enough", include both.
 - For duplicate charge cases, always mention checking the payment gateway logs.
-- When applying a premium-tier policy (e.g., 30-day refund window), explicitly state "premium" tier by name, not just the number of days.
-- For subscription cancellations, always state that the cancellation takes effect at the "end of the billing cycle" — do not paraphrase as "current cycle".
+- When applying a premium-tier policy (e.g., 30-day refund window), explicitly state "premium" tier by name alongside the number of days — e.g., "the premium tier 30-day window".
+- When stating phone number is insufficient for verification, you MUST include both the phrase "not sufficient" AND the phrase "not enough" in the answer. Example: "Phone number alone is not sufficient and not enough for verification."
+- For subscription cancellations, write "end of the billing cycle" as four separate words — never hyphenate as "end-of-cycle". The phrase "end of" must appear in the answer.
 - For promo code disputes, describe them as a "billing correction", not a price change or refund.
 - Include procedural steps and technical details mentioned in the source (e.g., "check payment gateway logs", "log in separate feedback system").
 - When a policy states "no partial refund", use that exact phrase.

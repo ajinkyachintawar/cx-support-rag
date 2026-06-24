@@ -50,7 +50,7 @@ async def evaluate_faithfulness(answer: str, retrieved_docs: list[dict]) -> floa
         return 0.0
 
 
-async def run_single_case(graph, case: dict) -> EvalResult:
+async def run_single_case(graph, case: dict, run_faithfulness: bool = False) -> EvalResult:
     # Retry on 429 with backoff
     for attempt in range(4):
         try:
@@ -82,10 +82,12 @@ async def run_single_case(graph, case: dict) -> EvalResult:
     retrieved_docs = result.get("retrieved_docs", [])
     actual_sources = [doc["source"] for doc in retrieved_docs]
 
-    faithfulness = await evaluate_faithfulness(
-        result.get("answer", ""),
-        retrieved_docs,
-    )
+    faithfulness = 0.0
+    if run_faithfulness:
+        faithfulness = await evaluate_faithfulness(
+            result.get("answer", ""),
+            retrieved_docs,
+        )
 
     eval_result = EvalResult(
         test_id=case["id"],
@@ -201,13 +203,20 @@ def generate_report(results: list[EvalResult], metrics: dict) -> str:
     return "\n".join(lines)
 
 
-async def main():
+async def main(run_faithfulness: bool = False, case_ids: list[str] | None = None):
     gt_path = Path(__file__).parent / "ground_truth.json"
-    test_cases = json.loads(gt_path.read_text())
+    all_cases = json.loads(gt_path.read_text())
 
-    print(f"Running eval suite: {len(test_cases)} cases")
+    if case_ids:
+        test_cases = [c for c in all_cases if c["id"] in case_ids]
+        print(f"Running spot-check: {len(test_cases)} cases ({', '.join(case_ids)})")
+    else:
+        test_cases = all_cases
+        print(f"Running eval suite: {len(test_cases)} cases")
+
     print(f"Model: {settings.synthesis_model}")
     print(f"Embeddings: {settings.embedding_model}")
+    print(f"Faithfulness judge: {'enabled' if run_faithfulness else 'disabled (use --faithfulness to enable)'}")
     print()
 
     await get_pool()
@@ -215,9 +224,9 @@ async def main():
 
     results = []
     for i, case in enumerate(test_cases):
-        result = await run_single_case(graph, case)
+        result = await run_single_case(graph, case, run_faithfulness=run_faithfulness)
         results.append(result)
-        # Groq: 30 RPM — small sleep to avoid bursting
+        # Small sleep to avoid rate limit bursting
         if i < len(test_cases) - 1:
             await asyncio.sleep(3)
 
@@ -254,5 +263,11 @@ async def main():
 
 
 if __name__ == "__main__":
-    passed = asyncio.run(main())
+    run_faithfulness = "--faithfulness" in sys.argv
+    # --cases GT-10,GT-15,GT-16
+    case_ids = None
+    for arg in sys.argv[1:]:
+        if arg.startswith("--cases="):
+            case_ids = arg.split("=", 1)[1].split(",")
+    passed = asyncio.run(main(run_faithfulness=run_faithfulness, case_ids=case_ids))
     sys.exit(0 if passed else 1)

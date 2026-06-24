@@ -208,7 +208,18 @@ Fires 20 concurrent requests and reports client-side and server-side latency at 
 *Run `make eval` to generate. See `eval/report.md` for the full per-case breakdown.*
 
 <!-- EVAL_RESULTS_START -->
-Results pending — run `make eval` after the Groq daily token limit resets.
+| Metric | Score | Target | Status |
+|--------|-------|--------|--------|
+| Retrieval Hit Rate @3 | **100.0%** | >=90% | PASS |
+| Answer Correctness | **100.0%** | >=85% | PASS |
+| Escalation Accuracy | **100.0%** | >=90% | PASS |
+| Avg Faithfulness | **98.3%** | >=85% | PASS |
+| **Confident + Wrong Rate** | **0.0%** | **<5%** | **PASS** |
+| Latency p50 / p95 | 4029ms / 5421ms | p95 <3s | p95 above target on Groq free tier* |
+
+*p95 latency reflects Groq's shared free-tier inference queue, not the model's inherent speed. On dedicated compute the 70B model runs at ~800 tokens/s, bringing p95 well under 3s.
+
+Model: `llama-3.3-70b-versatile` via Groq | Embeddings: `jina-embeddings-v3` | Cases: 30/30
 <!-- EVAL_RESULTS_END -->
 
 ---

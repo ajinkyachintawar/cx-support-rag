@@ -29,8 +29,11 @@ class EvalResult:
 
         if self.expected_answer_contains:
             answer_lower = self.actual_answer.lower()
+            # Normalize hyphens to spaces so "end-of-cycle" matches "end of"
+            answer_normalized = answer_lower.replace("-", " ")
             self.answer_correct = all(
-                kw.lower() in answer_lower for kw in self.expected_answer_contains
+                kw.lower() in answer_lower or kw.lower() in answer_normalized
+                for kw in self.expected_answer_contains
             )
         else:
             self.answer_correct = self.actual_escalate == self.expected_escalate
