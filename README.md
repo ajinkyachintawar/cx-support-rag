@@ -1,4 +1,4 @@
-# Otonomee Knowledge Base Agent
+# CX Support RAG Agent
 
 A production-grade RAG agent for CX support teams. Ask it any support question in natural language — it retrieves the relevant policy or case precedent, cites its source, and refuses to answer when confidence is low.
 
